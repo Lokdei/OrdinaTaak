@@ -15,6 +15,7 @@ namespace OrdinaTaak.Auth
 
         private RoleValidation()
         {
+            AssignActionToRole<ReadTextRole>(new OReadTextFile());
             AssignActionToRole<ReadXMLRole>(new OReadXMLFile());
         }
 

@@ -51,6 +51,7 @@ namespace OrdinaTaak
             if (fileType == OFileType.Text)
             {
                 var reader = new OReadTextFile();
+                if (!CanPerform(reader)) throw new UnauthorizedAccessException();
                 content = reader.ReadFile(filePath);
             }
             else if (fileType == OFileType.XML)
