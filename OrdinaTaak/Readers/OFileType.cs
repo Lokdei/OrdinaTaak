@@ -4,6 +4,7 @@
     public enum OFileType
     {
         Text,
-        XML
+        XML,
+        JSON
     }
 }

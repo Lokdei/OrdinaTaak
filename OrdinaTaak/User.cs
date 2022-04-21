@@ -46,27 +46,41 @@ namespace OrdinaTaak
         public string ReadFile(string filePath, OFileType fileType, bool isEncrypted = false)
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
+            
+            OFileReader reader;
+            string content;
 
-            string content = string.Empty;
-            if (fileType == OFileType.Text)
+            switch (fileType)
             {
-                var reader = new OReadTextFile();
-                if (!CanPerform(reader)) throw new UnauthorizedAccessException();
-                content = reader.ReadFile(filePath);
-            }
-            else if (fileType == OFileType.XML)
-            {
-                var reader = new OReadXMLFile();
-                if (!CanPerform(reader)) throw new UnauthorizedAccessException();
-                content = reader.ReadFile(filePath);
+                case OFileType.Text:
+                    reader = new OReadTextFile();
+                    if (!CanPerform((OReadTextFile)reader)) throw new UnauthorizedAccessException();
+                    content = reader.ReadFile(filePath);
+                    break;
+
+                case OFileType.XML:
+                    reader = new OReadXMLFile();
+                    if (!CanPerform((OReadXMLFile)reader)) throw new UnauthorizedAccessException();
+                    content = reader.ReadFile(filePath);
+                    break;
+
+                case OFileType.JSON:
+                    reader = new OReadJsonFile();
+                    content = reader.ReadFile(filePath);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+
             }
 
             if (isEncrypted)
             {
-                ODecryptStrategy.Decrypt(content);
+                content = ODecryptStrategy.Decrypt(content);
             }
 
-            return string.Empty;
+            return content;
         }
     }
 }
+
