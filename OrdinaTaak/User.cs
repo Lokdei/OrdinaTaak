@@ -43,12 +43,35 @@ namespace OrdinaTaak
             return false;
         }
 
-        public string ReadFile(string filePath, OFileType fileType, bool isEncrypted = false)
+        public string ReadFile(
+            string filePath,
+            OFileType fileType,
+            bool isEncrypted,
+            IOFileDecryptionStrategy decryptionStrategy
+            )
+        {
+
+            if (isEncrypted && decryptionStrategy == null) throw new ArgumentNullException(nameof(decryptionStrategy));
+
+            var content = ReadFile(filePath, fileType);
+
+            if (isEncrypted)
+            {
+                content = decryptionStrategy.Decrypt(content);
+            }
+
+            return content;
+        }
+
+        public string ReadFile(
+            string filePath,
+            OFileType fileType
+            )
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
-            
+
+            string content = string.Empty;
             OFileReader reader;
-            string content;
 
             switch (fileType)
             {
@@ -66,17 +89,12 @@ namespace OrdinaTaak
 
                 case OFileType.JSON:
                     reader = new OReadJsonFile();
+                    if (!CanPerform((OReadJsonFile)reader)) throw new UnauthorizedAccessException();
                     content = reader.ReadFile(filePath);
                     break;
 
                 default:
                     throw new NotImplementedException();
-
-            }
-
-            if (isEncrypted)
-            {
-                content = ODecryptStrategy.Decrypt(content);
             }
 
             return content;
