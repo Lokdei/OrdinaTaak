@@ -17,6 +17,7 @@ namespace OrdinaTaak.Auth
         {
             AssignActionToRole<ReadTextRole>(new OReadTextFile());
             AssignActionToRole<ReadXMLRole>(new OReadXMLFile());
+            AssignActionToRole<ReadJSONRole>(new OReadTextFile());
         }
 
         public static RoleValidation Instance

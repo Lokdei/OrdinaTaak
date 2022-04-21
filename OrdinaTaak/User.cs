@@ -23,7 +23,15 @@ namespace OrdinaTaak
         {
             if (role == null) throw new ArgumentNullException(nameof(role));
 
-            _roles.Remove(role);
+            for (int i = 0; i < _roles.Count; i++)
+            {
+                if (string.Equals(_roles[i].Name, role.Name))
+                {
+                    _roles.RemoveAt(i);
+                    break;
+                }
+            }
+
         }
 
         public bool HasRole(IRole role)
@@ -37,18 +45,43 @@ namespace OrdinaTaak
         {
             foreach (var role in _roles)
             {
-                if (RoleValidation.Instance.GetActions(role.GetType()).Contains(action))
-                    return true;
+                // Looking for role.GetType() match with action
+                var allowed = RoleValidation.Instance.GetActions(role.GetType());
+                if (allowed.Count > 0) return true;
             }
+
             return false;
         }
 
-        public string ReadFile(string filePath, OFileType fileType, bool isEncrypted = false)
+        public string ReadFile(
+            string filePath,
+            OFileType fileType,
+            bool isEncrypted,
+            IOFileDecryptionStrategy decryptionStrategy
+            )
+        {
+
+            if (isEncrypted && decryptionStrategy == null) throw new ArgumentNullException(nameof(decryptionStrategy));
+
+            var content = ReadFile(filePath, fileType);
+
+            if (isEncrypted)
+            {
+                content = decryptionStrategy.Decrypt(content);
+            }
+
+            return content;
+        }
+
+        public string ReadFile(
+            string filePath,
+            OFileType fileType
+            )
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
-            
+
+            string content = string.Empty;
             OFileReader reader;
-            string content;
 
             switch (fileType)
             {
@@ -66,17 +99,12 @@ namespace OrdinaTaak
 
                 case OFileType.JSON:
                     reader = new OReadJsonFile();
+                    if (!CanPerform((OReadJsonFile)reader)) throw new UnauthorizedAccessException();
                     content = reader.ReadFile(filePath);
                     break;
 
                 default:
                     throw new NotImplementedException();
-
-            }
-
-            if (isEncrypted)
-            {
-                content = ODecryptStrategy.Decrypt(content);
             }
 
             return content;

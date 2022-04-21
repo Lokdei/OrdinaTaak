@@ -1,8 +1,16 @@
-﻿
+﻿using OrdinaTaak.Auth;
+
 namespace OrdinaTaak.Readers
 {
-    internal class OReadJsonFile : OFileReader
+    public class ReadJSONRole : IRole
     {
+        public string Name { get { return "ReadJSON"; } }
+    }
+
+    internal class OReadJsonFile : OFileReader, IReadPermission
+    {
+        public string Name { get { return "ReadJSON"; } }
+
         public override string ReadFile(string filePath)
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
