@@ -1,8 +1,8 @@
-﻿namespace OrdinaTaak
+﻿namespace OrdinaTaak.Readers
 {
-    public class ReadFromFile
+    internal class OReadXMLFile : OFileReader
     {
-        public static string ReadFile(string filePath)
+        public override string ReadFile(string filePath)
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
 
@@ -12,6 +12,4 @@
             return text;
         }
     }
-
-
 }
