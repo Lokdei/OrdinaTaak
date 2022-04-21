@@ -1,7 +1,16 @@
-﻿namespace OrdinaTaak.Readers
+﻿using OrdinaTaak.Auth;
+
+namespace OrdinaTaak.Readers
 {
-    internal class OReadXMLFile : OFileReader
+    public class ReadXMLRole : IRole
     {
+        public string Name { get { return "ReadXML"; } }
+    }
+
+    internal class OReadXMLFile : OFileReader, IReadPermission
+    {
+        public string Name { get { return "ReadXML"; } }
+
         public override string ReadFile(string filePath)
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
